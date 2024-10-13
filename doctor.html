@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Details</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Doctor Details</h1>
+    <div>
+        <form>
+            <input type="text" id="doctor_id" placeholder="Doctor ID">
+            <input type="button" onclick="getDoctorDetails()" value="Get Details">
+        </form>
+        <div id="doctor_details"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@aptos-labs/aptos"></script>
+    <script>
+        const client = new aptos.AptosClient('https://fullnode.devnet.aptoslabs.com');
+
+        async function getDoctorDetails() {
+            const doctorId = document.getElementById('doctor_id').value;
+            if (!doctorId) {
+                alert('Please enter a Doctor ID');
+                return;
+            }
+
+            try {
+                const resource = await client.getAccountResource(
+                    '0x1',
+                    '0x1::Doctor::DoctorList'
+                );
+                const doctorList = resource.data.map;
+                const doctor = doctorList[doctorId];
+
+                if (doctor) {
+                    document.getElementById('doctor_details').innerText = JSON.stringify(doctor);
+                } else {
+                    document.getElementById('doctor_details').innerText = 'Doctor not found';
+                }
+            } catch (error) {
+                console.error('Error fetching doctor details:', error);
+                document.getElementById('doctor_details').innerText = 'Error fetching doctor details';
+            }
+        }
+    </script>
+</body>
+</html>
